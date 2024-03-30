@@ -7,7 +7,7 @@ const PORT=8000;
 
 app.use(bodyParser.json());
 app.use('/admin',adminRoutes);
-app.use('/user',userRoutes);
+app.use('/users',userRoutes);
 app.listen(PORT,()=>{
     console.log('listening on port 8000');
 });
