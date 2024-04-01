@@ -1,6 +1,10 @@
 const express=require('express');
 const {adminMiddleware}=require('../middleware/admin');
 const { Course,Admin} = require('../db/db');
+const jwt=require("jsonwebtoken");
+const dotenv=require("dotenv");
+dotenv.config();
+const SECRET_KEY=process.env.JWT_SECRET_KEY;
 const router=express.Router();
 
 router.post('/courses',adminMiddleware,(req,res)=>{
@@ -45,11 +49,37 @@ router.post('/signup',async (req,res)=>{
            })
 });
 
-router.get('/courses',adminMiddleware,(req,res)=>{
+router.post("/signin",async (req,res)=>{
+
+    const adminname=req.body.adminname;
+    const adminpassword=req.body.adminpassword;
+    
+    await Admin.findOne({
+     adminname,adminpassword
+    }).then(function(value){
+     
+     if(value){
+       const token=jwt.sign({adminname},SECRET_KEY)
+       res.json({token});
+     }
+     else
+     {
+       res.status(403).json({
+         msg:"User not found"
+       })
+     }
+ 
+ }).catch((err)=>{
+   console.log(err);
+ })
+ 
+ })
+
+
+router.get('/courses',adminMiddleware,async (req,res)=>{
         
-    res.json({
-        msg:"/admin/courses get req",
-    })
+    const courses=await Course.find({});
+    res.json(courses);
 });
 
 module.exports = router;

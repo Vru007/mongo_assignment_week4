@@ -1,6 +1,11 @@
 const express=require('express');
 const {userMiddleware}=require('../middleware/user');
 const router=express.Router();
+const jwt=require("jsonwebtoken");
+const dotenv=require("dotenv");
+dotenv.config();
+const SECRET_KEY=process.env.JWT_SECRET_KEY;
+
 const {User,Course}=require("../db/db");
 
 router.post('/signup',async (req,res)=>{
@@ -29,11 +34,36 @@ router.post('/signup',async (req,res)=>{
       })
 });
 
+router.post("/signin",async(req,res)=>{
+
+   const username=req.body.username;
+   const password=req.body.password;
+    
+    await User.findOne({
+    username:username,password:password
+   }).then(function(value){
+    if(value){
+      const token=jwt.sign({username},SECRET_KEY)
+      res.json({token});
+    }
+    else
+    {
+      res.status(403).json({
+        msg:"User not found"
+      })
+    }
+
+}).catch((err)=>{
+  console.log(err);
+})
+
+
+});
+
 router.post('/courses/:courseId',userMiddleware,async (req,res)=>{
       
      const courseId=req.params.courseId;
-     const username=req.headers.username;
-
+     const username=req.username;
      await User.updateOne({
         username:username
      },{
@@ -51,13 +81,10 @@ router.post('/courses/:courseId',userMiddleware,async (req,res)=>{
 
 
 router.get('/purchasedCourses',userMiddleware,async (req,res)=>{
-      
-    const user=await User.findOne({username:req.headers.username})
+      const username=req.username;
+    const user=await User.findOne({username:username})
     
-
-  
-
-    const courses=await Course.find({
+   const courses=await Course.find({
         _id:{
             "$in":user.purchasedCourses 
            }
