@@ -1,12 +1,12 @@
-const User=require("../db/db")
+const {Admin}=require("../db/db")
 function adminMiddleware(req,res,next){
       
-    const username=req.headers.username;
-    const password=req.headers.password;
+    const adminname=req.headers.adminname;
+    const adminpassword=req.headers.adminpassword;
 
-    const user=User.findOne({
-        username:username,
-        password:password,
+    const user=Admin.findOne({
+        adminname:adminname,
+        adminpassword:adminpassword,
 
     })
       

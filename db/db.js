@@ -1,11 +1,8 @@
 const mongoose=require('mongoose');
-
-mongoose.connect("mongodb+srv://vrushik7143work:NqoMJ7YBt72GZFB2@cluster0.6kifwdf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
-
 const adminSchema= new mongoose.Schema({
      
-   username:String,
-   password:String,
+   adminname:String,
+   adminpassword:String,
 });
 
 const userSchema= new mongoose.Schema({
